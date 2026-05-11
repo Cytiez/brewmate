@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/Button";
 import { Label, Input } from "@/components/ui/Field";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
 import { Switch } from "@/components/ui/Switch";
-import Eyebrow from "@/components/ui/Eyebrow";
 import type { Bean } from "@/lib/db-types";
 
 export default function BeanForm({
@@ -139,13 +138,10 @@ export default function BeanForm({
   );
 }
 
-function FormSection({ index, title, children }: { index: string; title: string; children: React.ReactNode }) {
+function FormSection({ title, children }: { index?: string; title: string; children: React.ReactNode }) {
   return (
     <section className="space-y-4">
-      <div className="flex items-baseline justify-between">
-        <Eyebrow index={index}>{title}</Eyebrow>
-        <span className="h-px flex-1 ml-4 bg-rule" />
-      </div>
+      <h2 className="display text-xl text-ink">{title}</h2>
       {children}
     </section>
   );

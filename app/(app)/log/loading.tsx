@@ -3,9 +3,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 export default function LogLoading() {
   return (
     <div className="py-2">
-      <div className="font-mono text-[10px] uppercase tracking-kissaten text-ink-3 mb-3">
-        log · 記録
-      </div>
+      <p className="sublabel mb-3">Loading…</p>
       <Skeleton className="h-12 w-1/2 mb-8" />
       <div className="space-y-7">
         <Skeleton className="h-10 w-full" />

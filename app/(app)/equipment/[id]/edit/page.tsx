@@ -16,7 +16,7 @@ export default async function EditEquipment({ params }: { params: { id: string }
 
   return (
     <div>
-      <PageHeader title={`Edit ${e.kind}`} eyebrow="bench · 編集" back="/equipment" />
+      <PageHeader title={`Edit ${e.kind}`} back="/equipment" />
       <EquipmentForm initial={e} action={bound} submitLabel="Save changes" lockKind={e.kind} />
       <form action={del} className="mt-8 pt-6 border-t border-rule">
         <Button type="submit" variant="ghost" size="md" className="w-full text-persimmon hover:bg-persimmon/10">

@@ -2,10 +2,14 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import type { Bean } from "@/lib/db-types";
 
-export default function BeanCard({ bean, index }: { bean: Bean; index: number }) {
+export default function BeanCard({ bean }: { bean: Bean }) {
   const days = bean.roast_date ? Math.floor((Date.now() - new Date(bean.roast_date).getTime()) / 86400000) : null;
   const meta = [bean.roaster, bean.origin_country].filter(Boolean).join(" · ");
-  const stats = [bean.process, bean.roast_level, days != null ? `${days}d` : null].filter(Boolean).join(" · ");
+  const stats = [
+    bean.process ? cap(bean.process) : null,
+    bean.roast_level ? cap(bean.roast_level) : null,
+    days != null ? `${days}d off roast` : null,
+  ].filter(Boolean).join(" · ");
 
   return (
     <Link
@@ -13,22 +17,19 @@ export default function BeanCard({ bean, index }: { bean: Bean; index: number })
       className="group block py-4 md:py-5 border-b border-rule hover:bg-elevated transition-colors -mx-5 sm:-mx-6 md:-mx-8 px-5 sm:px-6 md:px-8"
     >
       <div className="flex items-start gap-4">
-        <div className="font-mono text-[11px] tabular-nums text-ink-3 pt-1 w-8 flex-none">
-          {(index + 1).toString().padStart(2, "0")}
-        </div>
-
         <div className="flex-1 min-w-0">
           <div className="flex items-baseline gap-2 mb-1">
             <h3 className="display text-xl md:text-2xl leading-tight truncate">{bean.name}</h3>
             {bean.is_active ? (
-              <span className="font-mono text-[10px] uppercase tracking-kissaten text-persimmon flex-none">
-                ● active
+              <span className="inline-flex items-center gap-1.5 text-[12px] text-persimmon flex-none">
+                <span className="h-1.5 w-1.5 rounded-full bg-persimmon" />
+                Active
               </span>
             ) : null}
           </div>
           {meta && <p className="text-[14px] md:text-[15px] text-ink-2 truncate">{meta}</p>}
           {stats && (
-            <p className="font-mono text-[11px] uppercase tracking-widest text-ink-3 mt-1">{stats}</p>
+            <p className="text-[13px] text-ink-3 mt-1">{stats}</p>
           )}
 
           {bean.flavor_notes?.length ? (
@@ -47,3 +48,5 @@ export default function BeanCard({ bean, index }: { bean: Bean; index: number })
     </Link>
   );
 }
+
+function cap(s: string) { return s.charAt(0).toUpperCase() + s.slice(1); }

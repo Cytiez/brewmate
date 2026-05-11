@@ -20,12 +20,9 @@ export default function TopNav({ signOut }: { signOut?: React.ReactNode }) {
     <header className="hidden md:block sticky top-0 z-30 bg-paper/85 backdrop-blur-md border-b border-rule">
       <div className="spine-wide flex items-center h-16 gap-8">
         {/* Masthead */}
-        <Link href="/home" className="flex items-baseline gap-2 group">
+        <Link href="/home" className="group">
           <span className="display text-lg leading-none group-hover:text-persimmon transition-colors">
             Brewmate
-          </span>
-          <span className="font-mono text-[10px] uppercase tracking-kissaten text-ink-3">
-            日録
           </span>
         </Link>
 

@@ -67,7 +67,7 @@ export default async function HistoryPage({ searchParams }: { searchParams: Sear
     <div>
       <PageHeader
         title="The journal"
-        eyebrow="日録 · brew log"
+        sublabel={rows.length > 0 ? `${rows.length} entr${rows.length === 1 ? "y" : "ies"}.` : undefined}
         action={
           <FilterSheet
             beans={(beans as any) ?? []}
@@ -85,21 +85,13 @@ export default async function HistoryPage({ searchParams }: { searchParams: Sear
           ctaHref="/log"
         />
       ) : (
-        <>
-          <div className="flex items-baseline justify-between mb-3">
-            <span className="font-mono text-[10px] uppercase tracking-kissaten text-ink-3">
-              entries · <span className="num">{rows.length.toString().padStart(3, "0")}</span>
-            </span>
-            <span className="h-px flex-1 ml-4 bg-rule" />
-          </div>
-          <ul className="border-t border-rule">
-            {rows.map((r, i) => (
-              <li key={r.id}>
-                <HistoryItem row={r} diffs={diffs.get(r.id) ?? []} index={i} />
-              </li>
-            ))}
-          </ul>
-        </>
+        <ul className="border-t border-rule">
+          {rows.map((r, i) => (
+            <li key={r.id}>
+              <HistoryItem row={r} diffs={diffs.get(r.id) ?? []} index={i} />
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   );

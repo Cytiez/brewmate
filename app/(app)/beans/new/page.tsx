@@ -7,7 +7,7 @@ export const metadata = { title: "New bean — Brewmate" };
 export default function NewBeanPage() {
   return (
     <div>
-      <PageHeader title="New bean" eyebrow="cupboard · 新規" back="/beans" />
+      <PageHeader title="New bean" back="/beans" />
       <BeanForm action={createBean} submitLabel="Add to cupboard" />
     </div>
   );

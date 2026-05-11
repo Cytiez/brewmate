@@ -6,7 +6,6 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
 import { Button } from "@/components/ui/Button";
 import { Label, Input } from "@/components/ui/Field";
 import { Switch } from "@/components/ui/Switch";
-import Eyebrow from "@/components/ui/Eyebrow";
 import type { Equipment, EquipmentKind } from "@/lib/db-types";
 
 const PLACEHOLDER: Record<EquipmentKind, string> = {
@@ -50,7 +49,7 @@ export default function EquipmentForm({
       className="space-y-8 md:max-w-2xl"
     >
       <section className="space-y-3">
-        <Eyebrow index="01">Type</Eyebrow>
+        <h2 className="display text-xl text-ink">Type</h2>
         <ToggleGroup
           type="single"
           value={kind}
@@ -67,7 +66,7 @@ export default function EquipmentForm({
       </section>
 
       <section className="space-y-4">
-        <Eyebrow index="02">Details</Eyebrow>
+        <h2 className="display text-xl text-ink">Details</h2>
         <div>
           <Label htmlFor="name">Name <span className="text-persimmon">*</span></Label>
           <Input id="name" name="name" required defaultValue={v.name ?? ""} placeholder={PLACEHOLDER[kind]} />

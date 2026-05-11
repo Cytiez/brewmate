@@ -22,11 +22,13 @@ export default async function BeansPage() {
     <div>
       <PageHeader
         title="The cupboard"
-        eyebrow={`豆 · ${beans.length} bag${beans.length === 1 ? "" : "s"}${activeCount ? ` · ${activeCount} active` : ""}`}
+        sublabel={beans.length === 0
+          ? "Empty."
+          : `${beans.length} bag${beans.length === 1 ? "" : "s"}${activeCount ? `, ${activeCount} active` : ""}.`}
         action={
           <Link
             href="/beans/new"
-            className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-widest text-ink hover:text-persimmon transition-colors"
+            className="inline-flex items-center gap-1.5 text-[14px] text-ink hover:text-persimmon transition-colors"
           >
             <Plus className="h-3.5 w-3.5" />
             New bag
@@ -43,9 +45,9 @@ export default async function BeansPage() {
         />
       ) : (
         <ul className="border-t border-rule lg:grid lg:grid-cols-2 lg:gap-x-10 lg:border-t-0">
-          {beans.map((b, i) => (
+          {beans.map((b) => (
             <li key={b.id} className="lg:border-t lg:border-rule">
-              <BeanCard bean={b} index={i} />
+              <BeanCard bean={b} />
             </li>
           ))}
         </ul>

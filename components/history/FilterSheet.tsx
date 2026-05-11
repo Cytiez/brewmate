@@ -54,17 +54,15 @@ export default function FilterSheet({ beans, drippers, current }: Props) {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <button className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest text-ink-2 hover:text-ink transition-colors">
-          <Filter className="h-3 w-3" />
+        <button className="inline-flex items-center gap-1.5 text-[14px] text-ink-2 hover:text-ink transition-colors">
+          <Filter className="h-3.5 w-3.5" />
           Filter{active ? <span className="text-persimmon"> · {count}</span> : null}
         </button>
       </SheetTrigger>
 
       <SheetContent side="bottom" className="px-5 pt-6 pb-4">
         <SheetTitle>Filter the journal</SheetTitle>
-        <div className="font-mono text-[10px] uppercase tracking-kissaten text-ink-3 mb-6">
-          narrow by bean, dripper, taste, or date
-        </div>
+        <p className="sublabel mb-6">Narrow by bean, dripper, taste, or date.</p>
 
         <div className="space-y-5">
           <div>

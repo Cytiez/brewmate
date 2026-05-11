@@ -23,7 +23,7 @@ export default async function LogPage() {
   if (!hasMinimal) {
     return (
       <div>
-        <PageHeader title="New brew" eyebrow="log · 記録" />
+        <PageHeader title="New brew" />
         {allBeans.length === 0 ? (
           <EmptyState
             title="No beans, no brew."
@@ -45,7 +45,7 @@ export default async function LogPage() {
 
   return (
     <div>
-      <PageHeader title="New brew" eyebrow="log · 記録" />
+      <PageHeader title="New brew" />
       <BrewLogForm beans={allBeans} equipment={allEquipment} recentLogs={allLogs} />
     </div>
   );

@@ -39,15 +39,12 @@ export default function GetSuggestionButton({ brewLogId }: { brewLogId: string }
 
   if (result) {
     return (
-      <div className="mt-3 pt-3 border-t border-rule">
-        <div className="flex items-baseline gap-2 mb-1.5">
-          <span className="font-mono text-[9px] uppercase tracking-kissaten text-persimmon">
-            ✱ master&apos;s note
+      <div className="mt-4 pt-4 border-t border-rule">
+        <div className="flex items-baseline gap-3 mb-1.5">
+          <span className="text-[12px] uppercase tracking-widest text-persimmon">
+            ✱ Master&apos;s note
           </span>
-          <span className="font-mono text-[9px] uppercase tracking-kissaten text-matcha">
-            ✓ saved
-          </span>
-          <span className="h-px flex-1 bg-rule" />
+          <span className="text-[12px] text-matcha">✓ Saved</span>
         </div>
         <p className="whitespace-pre-line text-[14px] leading-relaxed text-ink">{result}</p>
       </div>

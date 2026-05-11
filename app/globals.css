@@ -85,11 +85,18 @@ body::before {
    Reusable component classes
    ============================================================ */
 @layer components {
-  /* Eyebrow — nudged from 10/9px to 11/10px so it's actually readable */
+  /* Eyebrow — kept for section-level use on the Log form. Other pages should
+     prefer .sublabel for secondary text. */
   .eyebrow {
-    @apply font-mono text-[11px] uppercase tracking-kissaten text-ink-2;
+    @apply font-mono text-[11px] uppercase tracking-widest text-ink-2;
   }
   .eyebrow-faint { @apply eyebrow text-ink-3; }
+
+  /* Sub-label — sentence-case sans for helper text under headlines and beside
+     metrics. Replaces ~80% of the previous mono-uppercase chrome. */
+  .sublabel {
+    @apply font-sans text-[13px] text-ink-2;
+  }
 
   .hr-hairline { @apply h-px w-full bg-rule; }
   .vr-hairline { @apply w-px h-full bg-rule; }
@@ -160,15 +167,16 @@ body::before {
     @apply font-mono text-[11px] uppercase tracking-kissaten text-ink-2 block mb-2;
   }
 
-  /* Tag / chip */
+  /* Tag / chip — softer default borders so the active state has more to push
+     against. Hover lifts to ink. */
   .tag {
-    @apply inline-flex items-center min-h-[36px] px-3 bg-transparent border-hairline border-rule-strong
-           font-mono text-[11px] uppercase tracking-widest text-ink
+    @apply inline-flex items-center min-h-[36px] px-3 bg-transparent border-hairline border-rule
+           font-mono text-[11px] uppercase tracking-widest text-ink-2
            transition cursor-pointer select-none whitespace-nowrap
-           hover:border-ink;
+           hover:border-ink hover:text-ink;
   }
   .tag[data-state="on"], .tag-active {
-    @apply bg-ink text-paper border-ink hover:border-ink;
+    @apply bg-ink text-paper border-ink hover:border-ink hover:text-paper;
   }
 
   /* Spine — responsive reading column, replaces hard mobile cap */

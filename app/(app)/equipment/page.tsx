@@ -2,16 +2,15 @@ import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import PageHeader from "@/components/ui/PageHeader";
 import EmptyState from "@/components/ui/EmptyState";
-import Eyebrow from "@/components/ui/Eyebrow";
 import { Plus } from "lucide-react";
 import type { Equipment, EquipmentKind } from "@/lib/db-types";
 
 export const dynamic = "force-dynamic";
 
-const LABEL: Record<EquipmentKind, { en: string; jp: string }> = {
-  grinder: { en: "Grinders", jp: "ミル" },
-  dripper: { en: "Drippers", jp: "ドリッパー" },
-  kettle:  { en: "Kettles",  jp: "ケトル" },
+const LABEL: Record<EquipmentKind, string> = {
+  grinder: "Grinders",
+  dripper: "Drippers",
+  kettle:  "Kettles",
 };
 
 export default async function EquipmentPage() {
@@ -30,13 +29,12 @@ export default async function EquipmentPage() {
     <div>
       <PageHeader
         title="The bench"
-        eyebrow="gear · 道具"
         action={
           <Link
             href="/equipment/new"
-            className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest text-ink hover:text-persimmon transition-colors"
+            className="inline-flex items-center gap-1.5 text-[14px] text-ink hover:text-persimmon transition-colors"
           >
-            <Plus className="h-3 w-3" />
+            <Plus className="h-3.5 w-3.5" />
             Add
           </Link>
         }
@@ -53,14 +51,9 @@ export default async function EquipmentPage() {
         <div className="space-y-9">
           {(Object.keys(LABEL) as EquipmentKind[]).map((kind) => (
             <section key={kind}>
-              <div className="flex items-baseline justify-between mb-3">
-                <Eyebrow>{LABEL[kind].jp} · {LABEL[kind].en}</Eyebrow>
-                <span className="font-mono text-[10px] uppercase tracking-widest text-ink-3 num">
-                  {grouped[kind].length.toString().padStart(2, "0")}
-                </span>
-              </div>
+              <h2 className="display text-xl text-ink mb-3">{LABEL[kind]}</h2>
               {grouped[kind].length === 0 ? (
-                <p className="text-sm text-ink-3 italic">none yet.</p>
+                <p className="text-[14px] text-ink-3 italic">None yet.</p>
               ) : (
                 <ul className="border-t border-rule md:grid md:grid-cols-2 md:gap-x-8 md:border-t-0 lg:grid-cols-3">
                   {grouped[kind].map((e) => (
@@ -72,15 +65,16 @@ export default async function EquipmentPage() {
                         <div className="flex items-center justify-between gap-3">
                           <div className="min-w-0">
                             <div className="font-serif text-lg md:text-xl text-ink truncate">{e.name}</div>
-                            <div className="font-mono text-[11px] uppercase tracking-widest text-ink-2 mt-0.5">
-                              {e.kind === "grinder" && e.grind_unit ? `unit · ${e.grind_unit}` : null}
-                              {e.kind === "kettle" ? (e.temp_control ? "temp control" : "no temp control") : null}
+                            <div className="text-[13px] text-ink-2 mt-0.5">
+                              {e.kind === "grinder" && e.grind_unit ? `Unit: ${e.grind_unit}` : null}
+                              {e.kind === "kettle" ? (e.temp_control ? "Temperature control" : "No temperature control") : null}
                               {!e.grind_unit && e.kind !== "kettle" ? "—" : null}
                             </div>
                           </div>
                           {e.is_default ? (
-                            <span className="font-mono text-[10px] uppercase tracking-kissaten text-persimmon">
-                              ● default
+                            <span className="inline-flex items-center gap-1.5 text-[12px] text-ink-2">
+                              <span className="h-1.5 w-1.5 rounded-full bg-ink-2" />
+                              Default
                             </span>
                           ) : null}
                         </div>

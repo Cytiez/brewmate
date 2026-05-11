@@ -17,7 +17,7 @@ export default async function EditBeanPage({ params }: { params: { id: string } 
 
   return (
     <div>
-      <PageHeader title="Edit bean" eyebrow="cupboard · 編集" back={`/beans/${bean.id}`} />
+      <PageHeader title="Edit bean" back={`/beans/${bean.id}`} />
       <BeanForm initial={bean} action={bound} submitLabel="Save changes" />
       <form action={del} className="mt-8 pt-6 border-t border-rule">
         <Button type="submit" variant="ghost" size="md" className="w-full text-persimmon hover:bg-persimmon/10">

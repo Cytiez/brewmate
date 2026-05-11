@@ -5,9 +5,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 export default function AppLoading() {
   return (
     <div className="py-2">
-      <div className="font-mono text-[10px] uppercase tracking-kissaten text-ink-3 mb-3">
-        brewing…
-      </div>
+      <p className="sublabel mb-3">Brewing…</p>
       <Skeleton className="h-10 w-2/3 mb-3" />
       <Skeleton className="h-4 w-1/3 mb-8" />
       <div className="space-y-3">

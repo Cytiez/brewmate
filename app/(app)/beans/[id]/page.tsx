@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import PageHeader from "@/components/ui/PageHeader";
 import TastePill from "@/components/ui/TastePill";
-import Eyebrow from "@/components/ui/Eyebrow";
 import { Button } from "@/components/ui/Button";
 import { toggleBeanActive } from "../actions";
 import type { Bean } from "@/lib/db-types";
@@ -30,9 +29,16 @@ export default async function BeanDetail({ params }: { params: { id: string } })
       <PageHeader
         title={b.name}
         back="/beans"
-        eyebrow={b.is_active ? "● active bean" : "bean"}
+        sublabel={
+          b.is_active ? (
+            <span className="inline-flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-persimmon" />
+              Active bean
+            </span>
+          ) : undefined
+        }
         action={
-          <Link href={`/beans/${b.id}/edit`} className="font-mono text-[11px] uppercase tracking-widest text-ink-2 hover:text-ink transition-colors">
+          <Link href={`/beans/${b.id}/edit`} className="text-[14px] text-ink-2 hover:text-ink transition-colors">
             Edit
           </Link>
         }
@@ -55,8 +61,8 @@ export default async function BeanDetail({ params }: { params: { id: string } })
 
           {b.flavor_notes?.length ? (
             <section className="mb-6 md:mb-8">
-              <Eyebrow>Cupping notes</Eyebrow>
-              <p className="display text-2xl md:text-3xl leading-snug mt-3 italic">
+              <p className="sublabel mb-2">Cupping notes</p>
+              <p className="display text-2xl md:text-3xl leading-snug italic">
                 {b.flavor_notes.join(" · ")}
               </p>
             </section>
@@ -78,15 +84,15 @@ export default async function BeanDetail({ params }: { params: { id: string } })
         {/* Right: brews list */}
         <section>
           <div className="flex items-baseline justify-between mb-3">
-            <Eyebrow index="brews">recorded</Eyebrow>
-            <span className="font-mono text-[11px] uppercase tracking-widest text-ink-2 num">
-              {logs?.length ?? 0} entries
+            <h2 className="display text-xl text-ink">Brews</h2>
+            <span className="sublabel">
+              {logs?.length ?? 0} entr{logs?.length === 1 ? "y" : "ies"}
             </span>
           </div>
 
           {logs && logs.length > 0 ? (
             <ul className="border-t border-rule">
-              {logs.map((l, i) => (
+              {logs.map((l) => (
                 <li key={l.id}>
                   <Link
                     href={`/history#log-${l.id}`}
@@ -94,12 +100,12 @@ export default async function BeanDetail({ params }: { params: { id: string } })
                   >
                     <div className="flex items-baseline justify-between gap-3">
                       <div className="min-w-0">
-                        <div className="font-mono text-[11px] uppercase tracking-widest text-ink-2 mb-0.5">
-                          {(i + 1).toString().padStart(3, "0")} · {new Date(l.brewed_at).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
+                        <div className="sublabel mb-0.5">
+                          {new Date(l.brewed_at).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
                         </div>
                         <div className="text-[14px] md:text-[15px]">
                           <span className="num">{l.dose_g}g</span>
-                          <span className="text-ink-3"> ／ </span>
+                          <span className="text-ink-3"> · </span>
                           <span className="num">{l.water_g}g</span>
                           <span className="text-ink-3"> · 1∶</span>
                           <span className="num">{(Number(l.water_g) / Number(l.dose_g)).toFixed(1)}</span>
@@ -123,7 +129,7 @@ export default async function BeanDetail({ params }: { params: { id: string } })
 function Spec({ label, value }: { label: string; value: string }) {
   return (
     <div className="py-3 md:py-4 px-4 md:px-5 odd:border-r border-rule border-b last:border-b-0 [&:nth-last-child(-n+2)]:border-b-0">
-      <div className="font-mono text-[11px] uppercase tracking-kissaten text-ink-2 mb-1">{label}</div>
+      <div className="text-[12px] text-ink-3 mb-1">{label}</div>
       <div className="text-[14px] md:text-[15px] text-ink truncate">{value}</div>
     </div>
   );

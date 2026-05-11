@@ -4,11 +4,10 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
-import { ChevronDown, ChevronUp, Sparkles } from "lucide-react";
+import { ChevronDown, ChevronUp, Plus, Sparkles } from "lucide-react";
 import BrewTimeInput from "./BrewTimeInput";
 import TasteRatingPicker from "./TasteRatingPicker";
 import PourScheduleEditor from "./PourScheduleEditor";
-import Eyebrow from "@/components/ui/Eyebrow";
 import { Button } from "@/components/ui/Button";
 import { Label, NumInput, Input, Textarea } from "@/components/ui/Field";
 import { Switch } from "@/components/ui/Switch";
@@ -132,8 +131,8 @@ export default function BrewLogForm({ beans, equipment, recentLogs }: Props) {
 
   return (
     <div className="pb-6 lg:grid lg:grid-cols-2 lg:gap-x-10 lg:gap-y-10 space-y-8 lg:space-y-0">
-      {/* 01 — Bean */}
-      <Section index="01" title="Bean">
+      {/* Bean */}
+      <Section index="1" title="Bean">
         <ChipRow>
           {beans.map((b) => (
             <Chip key={b.id} active={beanId === b.id} onClick={() => setBeanId(b.id)}>
@@ -144,8 +143,8 @@ export default function BrewLogForm({ beans, equipment, recentLogs }: Props) {
         </ChipRow>
       </Section>
 
-      {/* 02 — Gear */}
-      <Section index="02" title="Gear">
+      {/* Gear */}
+      <Section index="2" title="Gear">
         <div className="space-y-4">
           <FieldBlock label="Dripper">
             <ChipRow>
@@ -183,37 +182,31 @@ export default function BrewLogForm({ beans, equipment, recentLogs }: Props) {
         </div>
       </Section>
 
-      {/* 03 — Recipe */}
-      <Section index="03" title="Recipe">
-        {/* Big dose/water/ratio row */}
-        <div className="border-hairline border-rule-strong p-4">
-          <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-4">
-            <div>
-              <Label>Dose · g</Label>
-              <NumInput value={dose} onChange={(e) => setDose(e.target.value)} step="0.1" />
-            </div>
-            <div className="pb-3 text-ink-3 text-2xl font-serif">:</div>
-            <div>
-              <Label>Water · g</Label>
-              <NumInput value={water} onChange={(e) => setWater(e.target.value)} step="1" />
-            </div>
+      {/* Recipe */}
+      <Section index="3" title="Recipe">
+        {/* Dose + water — no frame; the ratio sits quietly below */}
+        <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-4">
+          <div>
+            <Label>Dose · g</Label>
+            <NumInput value={dose} onChange={(e) => setDose(e.target.value)} step="0.1" />
           </div>
-
-          <div className="mt-3 pt-3 border-t border-rule flex items-center justify-between">
-            <span className="eyebrow">Ratio</span>
-            <span className="num text-lg text-ink">
-              {ratio ? `1 ∶ ${ratio.toFixed(1)}` : "—"}
-            </span>
+          <div className="pb-3 text-ink-3 text-2xl font-serif">:</div>
+          <div>
+            <Label>Water · g</Label>
+            <NumInput value={water} onChange={(e) => setWater(e.target.value)} step="1" />
           </div>
         </div>
+        <p className="num text-center text-sm text-ink-2 mt-2">
+          {ratio ? `1 ∶ ${ratio.toFixed(1)}` : "—"}
+        </p>
 
-        <div className="grid grid-cols-2 gap-x-5 mt-5">
+        <div className="grid grid-cols-2 gap-x-5 mt-6">
           <div>
-            <Label>Temp · °C</Label>
+            <Label>Temperature · °C</Label>
             <NumInput value={temp} onChange={(e) => setTemp(e.target.value)} step="0.5" />
           </div>
           <div>
-            <Label>Grind {grindUnit ? `· ${grindUnit}` : ""}</Label>
+            <Label>Grind size {grindUnit ? `(${grindUnit})` : ""}</Label>
             <Input
               value={grind}
               onChange={(e) => setGrind(e.target.value)}
@@ -223,17 +216,17 @@ export default function BrewLogForm({ beans, equipment, recentLogs }: Props) {
           </div>
         </div>
 
-        <div className="mt-5">
-          <Label>Total time</Label>
+        <div className="mt-6">
+          <Label>Time</Label>
           <BrewTimeInput seconds={brewSecs} onChange={setBrewSecs} />
         </div>
 
         <button
           type="button"
           onClick={() => setShowBloom((v) => !v)}
-          className="mt-4 inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest text-ink-2 hover:text-ink transition-colors"
+          className="mt-5 inline-flex items-center gap-1.5 text-[14px] text-ink-2 hover:text-ink transition-colors"
         >
-          {showBloom ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+          {showBloom ? <ChevronUp className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
           {showBloom ? "Hide bloom" : "Add bloom"}
         </button>
         {showBloom && (
@@ -254,10 +247,10 @@ export default function BrewLogForm({ beans, equipment, recentLogs }: Props) {
         <button
           type="button"
           onClick={() => setShowAdvanced((v) => !v)}
-          className="mt-4 inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest text-ink-2 hover:text-ink transition-colors"
+          className="mt-4 inline-flex items-center gap-1.5 text-[14px] text-ink-2 hover:text-ink transition-colors"
         >
-          {showAdvanced ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-          {showAdvanced ? "Hide advanced" : "Advanced · immersion, pour schedule"}
+          {showAdvanced ? <ChevronUp className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
+          {showAdvanced ? "Hide advanced options" : "Multi-pour or immersion"}
         </button>
 
         {showAdvanced && (
@@ -277,8 +270,8 @@ export default function BrewLogForm({ beans, equipment, recentLogs }: Props) {
         )}
       </Section>
 
-      {/* 04 — Taste */}
-      <Section index="04" title="Taste">
+      {/* Taste */}
+      <Section index="4" title="Taste">
         <TasteRatingPicker value={taste} onChange={setTaste} />
         <Textarea
           value={note}
@@ -311,8 +304,8 @@ export default function BrewLogForm({ beans, equipment, recentLogs }: Props) {
           )}
         </Button>
         {!canSubmit && (
-          <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-widest text-ink-3">
-            Pick a bean, dripper, recipe & taste to continue
+          <p className="mt-3 text-center text-[13px] text-ink-3">
+            Pick a bean, dripper, recipe, and taste to continue.
           </p>
         )}
       </div>
@@ -323,9 +316,11 @@ export default function BrewLogForm({ beans, equipment, recentLogs }: Props) {
 function Section({ index, title, children }: { index: string; title: string; children: React.ReactNode }) {
   return (
     <section>
-      <div className="flex items-baseline justify-between mb-4">
-        <Eyebrow index={index}>{title}</Eyebrow>
-        <span className="h-px flex-1 ml-4 bg-rule" />
+      <div className="flex items-baseline gap-3 mb-4">
+        <span className="font-mono text-[13px] tabular-nums text-persimmon pt-1">
+          {index}.
+        </span>
+        <h2 className="display text-2xl md:text-3xl text-ink leading-tight">{title}</h2>
       </div>
       {children}
     </section>
@@ -366,13 +361,13 @@ function PostSubmit({ response, onLogAnother }: { response: SuggestionResp; onLo
   return (
     <div className="space-y-6 md:max-w-2xl md:mx-auto animate-page">
       <div className="text-center pt-4 pb-6 border-y border-rule">
-        <Eyebrow className="justify-center mb-3">brew saved</Eyebrow>
+        <p className="sublabel mb-2">Brew saved</p>
         <h2 className="display text-3xl mb-2">A note from the master</h2>
         <div className="mx-auto h-px w-12 bg-rule-strong mt-3" />
         {saved ? (
-          <div className="font-mono text-[9px] uppercase tracking-kissaten text-matcha mt-3">
-            ✓ saved to the journal · won&apos;t re-call AI
-          </div>
+          <p className="text-[13px] text-matcha mt-3">
+            ✓ Saved to your journal — won&apos;t re-call AI.
+          </p>
         ) : null}
       </div>
 
