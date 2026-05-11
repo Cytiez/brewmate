@@ -1,0 +1,202 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Kissaten palette — tuned for WCAG AA contrast on both themes
+   ============================================================ */
+:root {
+  --paper:           246 241 231; /* #F6F1E7 */
+  --surface:         251 247 238; /* #FBF7EE */
+  --elevated:        255 254 250; /* #FFFEFA */
+  --ink:              26  22  18; /* #1A1612  ~16:1 on paper */
+  --ink-2:            76  70  64; /* #4C4640  ~8.6:1 (AAA body) */
+  --ink-3:           107 100  91; /* #6B645B  ~4.7:1 (AA small) */
+  --rule:            214 204 186; /* #D6CCBA hairline */
+  --rule-strong:     176 161 137; /* #B0A189 */
+  --persimmon:       186  64  38; /* #BA4026  ~5.4:1 on paper */
+  --persimmon-soft:  224 130  96;
+  --matcha:           93 116  64; /* #5D7440  ~5.3:1 */
+  --amber:           166 124  41; /* #A67C29  ~5.4:1 */
+}
+
+.dark {
+  --paper:            21  17  13; /* #15110D */
+  --surface:          29  24  19; /* #1D1813 */
+  --elevated:         36  30  24; /* #241E18 */
+  --ink:             239 232 220; /* #EFE8DC washi */
+  --ink-2:           182 173 156; /* #B6AD9C  ~10:1 */
+  --ink-3:           134 126 113; /* #867E71  ~6:1 (AA) */
+  --rule:             55  47  38; /* #372F26 */
+  --rule-strong:      85  73  58; /* #55493A */
+  --persimmon:       232 122  85; /* #E87A55 */
+  --persimmon-soft:  125  47  27;
+  --matcha:          151 178 113; /* #97B271 */
+  --amber:           227 188 100; /* #E3BC64 */
+}
+
+/* ============================================================
+   Base — restored body, optical type, no flashes between themes
+   ============================================================ */
+html, body {
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+  font-feature-settings: "ss01", "cv11";
+}
+body {
+  background-color: rgb(var(--paper));
+  color: rgb(var(--ink));
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection { background: rgb(var(--persimmon) / 0.20); color: rgb(var(--ink)); }
+
+/* Washi paper grain — slightly toned down so it never fights contrast */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.30;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.12  0 0 0 0 0.10  0 0 0 0 0.08  0 0 0 0.55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  mix-blend-mode: multiply;
+}
+.dark body::before {
+  opacity: 0.22;
+  mix-blend-mode: screen;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.95  0 0 0 0 0.90  0 0 0 0 0.80  0 0 0 0.18 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+.relative-z { position: relative; z-index: 1; }
+
+/* Reduce motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ============================================================
+   Reusable component classes
+   ============================================================ */
+@layer components {
+  /* Eyebrow — nudged from 10/9px to 11/10px so it's actually readable */
+  .eyebrow {
+    @apply font-mono text-[11px] uppercase tracking-kissaten text-ink-2;
+  }
+  .eyebrow-faint { @apply eyebrow text-ink-3; }
+
+  .hr-hairline { @apply h-px w-full bg-rule; }
+  .vr-hairline { @apply w-px h-full bg-rule; }
+
+  /* Display serif — optical-size tuned via the Fraunces variable axes */
+  .display {
+    font-family: var(--font-fraunces), serif;
+    font-variation-settings: "opsz" 144, "SOFT" 30, "WONK" 0;
+    @apply tracking-tight text-ink;
+  }
+  .display-md { font-variation-settings: "opsz" 72, "SOFT" 40; }
+  .display-sm { font-variation-settings: "opsz" 36, "SOFT" 50; }
+
+  .num {
+    @apply font-mono tabular-nums;
+    font-feature-settings: "tnum", "zero";
+  }
+
+  .stamp {
+    @apply inline-flex items-center gap-1 font-mono text-[11px] uppercase tracking-kissaten text-persimmon;
+  }
+
+  .page-head {
+    @apply flex items-baseline justify-between gap-4 pb-3 border-b border-rule;
+  }
+
+  .panel {
+    @apply bg-surface border-hairline border-rule;
+  }
+  .panel-elevated {
+    @apply bg-elevated border-hairline border-rule-strong;
+  }
+
+  .row {
+    @apply flex items-baseline justify-between gap-4 py-3 border-b border-rule last:border-b-0;
+  }
+
+  /* Buttons */
+  .btn-ink {
+    @apply inline-flex items-center justify-center min-h-[44px] px-5 bg-ink text-paper
+           font-mono text-xs uppercase tracking-widest
+           transition active:scale-[0.99] disabled:opacity-40 disabled:pointer-events-none;
+  }
+  .btn-outline {
+    @apply inline-flex items-center justify-center min-h-[44px] px-5 bg-transparent
+           border-hairline border-ink text-ink font-mono text-xs uppercase tracking-widest
+           transition hover:bg-ink hover:text-paper active:scale-[0.99]
+           disabled:opacity-40 disabled:pointer-events-none;
+  }
+  .btn-persimmon {
+    @apply inline-flex items-center justify-center min-h-[44px] px-5 bg-persimmon text-paper
+           font-mono text-xs uppercase tracking-widest
+           transition active:scale-[0.99] disabled:opacity-40 disabled:pointer-events-none;
+  }
+
+  /* Form fields — text bumped from base to 15-16px for comfortable reading */
+  .field {
+    @apply w-full min-h-[44px] bg-transparent border-0 border-b border-rule-strong
+           font-sans text-[15px] md:text-base text-ink py-2 px-0
+           focus:outline-none focus:border-persimmon placeholder:text-ink-3
+           transition-colors;
+  }
+  .field-mono {
+    @apply field font-mono tabular-nums text-center text-2xl;
+    font-feature-settings: "tnum";
+  }
+  .field-label {
+    @apply font-mono text-[11px] uppercase tracking-kissaten text-ink-2 block mb-2;
+  }
+
+  /* Tag / chip */
+  .tag {
+    @apply inline-flex items-center min-h-[36px] px-3 bg-transparent border-hairline border-rule-strong
+           font-mono text-[11px] uppercase tracking-widest text-ink
+           transition cursor-pointer select-none whitespace-nowrap
+           hover:border-ink;
+  }
+  .tag[data-state="on"], .tag-active {
+    @apply bg-ink text-paper border-ink hover:border-ink;
+  }
+
+  /* Spine — responsive reading column, replaces hard mobile cap */
+  .spine {
+    @apply mx-auto w-full px-5 sm:px-8 md:px-10 lg:px-12;
+    max-width: min(100% - 1rem, 720px);
+  }
+  .spine-wide {
+    @apply mx-auto w-full px-5 sm:px-8 md:px-10 lg:px-12;
+    max-width: min(100% - 1rem, 1080px);
+  }
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
+/* ============================================================
+   Animations — kept lean. Page-load fade only. Stagger only on the
+   master's-note suggestions screen (high-impact moment).
+   ============================================================ */
+@keyframes page-fade {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+.animate-page { animation: page-fade 0.35s ease-out both; }
+
+@keyframes ink-fade {
+  0% { opacity: 0; transform: translateY(4px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.animate-ink-fade { animation: ink-fade 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
