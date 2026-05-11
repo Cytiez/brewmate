@@ -52,10 +52,25 @@ export function buildBrewPrompt({ bean, dripper, grinder, log }: PromptInput): s
     grinder ? `grinder: ${grinder.name}${grinder.grind_unit ? ` (${grinder.grind_unit})` : ""}` : null,
   ].filter(Boolean).join(" | ");
 
-  const pourSchedule = (log.pours ?? []).length
-    ? `pours: ${log.pours
-        .map((p) => `${fmtTime(p.time_seconds)} ${p.water_g}g`)
+  // Per-pour schedule with valve state — critical context for hybrid drippers
+  // (Hario Switch / Clever) where immersion vs drawdown shifts mid-recipe.
+  // "closed" means water steeps; "open" means water drains through.
+  const pours = log.pours ?? [];
+  const pourSchedule = pours.length
+    ? `pours: ${pours
+        .map((p) => {
+          const valve = p.immersion ? " [closed/steep]" : " [open]";
+          return `${fmtTime(p.time_seconds)} ${p.water_g}g${valve}`;
+        })
         .join(" → ")}`
+    : null;
+
+  // Aggregate hint: helps the model if it doesn't fully parse the per-pour list.
+  const anySteep = pours.some((p) => p.immersion);
+  const anyDrain = pours.some((p) => !p.immersion);
+  const styleHint =
+    anySteep && anyDrain ? "hybrid: steep then drain"
+    : anySteep ? "full immersion (valve closed throughout)"
     : null;
 
   const recipeParts = [
@@ -66,7 +81,7 @@ export function buildBrewPrompt({ bean, dripper, grinder, log }: PromptInput): s
     log.bloom_time_seconds && log.bloom_water_g
       ? `bloom ${log.bloom_time_seconds}s with ${log.bloom_water_g}g`
       : null,
-    log.immersion ? "immersion brew" : null,
+    styleHint,
     pourSchedule,
   ].filter(Boolean).join(" | ");
 

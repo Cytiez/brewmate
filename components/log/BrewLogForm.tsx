@@ -10,7 +10,6 @@ import TasteRatingPicker from "./TasteRatingPicker";
 import PourScheduleEditor from "./PourScheduleEditor";
 import { Button } from "@/components/ui/Button";
 import { Label, NumInput, Input, Textarea } from "@/components/ui/Field";
-import { Switch } from "@/components/ui/Switch";
 import { cn } from "@/lib/cn";
 import type { Bean, BrewLog, Equipment, Pour, TasteRating } from "@/lib/db-types";
 
@@ -61,11 +60,9 @@ export default function BrewLogForm({ beans, equipment, recentLogs }: Props) {
   const [bloomS, setBloomS]     = useState<string>(prefill?.bloom_time_seconds ? String(prefill.bloom_time_seconds) : "30");
   const [bloomG, setBloomG]     = useState<string>(prefill?.bloom_water_g ? String(prefill.bloom_water_g) : "");
 
-  // Advanced section: immersion flag + custom pour schedule.
+  // Advanced section: custom pour schedule with per-pour valve state.
   const prefillPours: Pour[] = Array.isArray(prefill?.pours) ? (prefill!.pours as Pour[]) : [];
-  const prefillImmersion = !!prefill?.immersion;
-  const [showAdvanced, setShowAdvanced] = useState<boolean>(prefillImmersion || prefillPours.length > 0);
-  const [immersion, setImmersion] = useState<boolean>(prefillImmersion);
+  const [showAdvanced, setShowAdvanced] = useState<boolean>(prefillPours.length > 0);
   const [pours, setPours] = useState<Pour[]>(prefillPours);
 
   const [taste, setTaste]       = useState<TasteRating | null>(null);
@@ -105,7 +102,10 @@ export default function BrewLogForm({ beans, equipment, recentLogs }: Props) {
           brew_time_seconds: brewSecs,
           bloom_time_seconds: showBloom && bloomS ? Number(bloomS) : null,
           bloom_water_g: showBloom && bloomG ? Number(bloomG) : null,
-          immersion: showAdvanced ? immersion : false,
+          // Derive brew-wide immersion column from per-pour state (any closed valve → true).
+          // Keeps the existing DB column useful for indexed filtering without forcing a
+          // top-level toggle on the user.
+          immersion: showAdvanced ? pours.some((p) => p.immersion) : false,
           pours: showAdvanced ? pours.filter((p) => p.water_g > 0) : [],
           taste_rating: taste,
           taste_note: note || null,
@@ -250,22 +250,15 @@ export default function BrewLogForm({ beans, equipment, recentLogs }: Props) {
           className="mt-4 inline-flex items-center gap-1.5 text-[14px] text-ink-2 hover:text-ink transition-colors"
         >
           {showAdvanced ? <ChevronUp className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
-          {showAdvanced ? "Hide advanced options" : "Multi-pour or immersion"}
+          {showAdvanced ? "Hide pour schedule" : "Add pour schedule"}
         </button>
 
         {showAdvanced && (
-          <div className="mt-4 pt-4 border-t border-rule space-y-5">
-            <div className="flex items-start justify-between gap-4">
-              <div className="min-w-0">
-                <div className="font-sans text-[15px] text-ink">Immersion brew</div>
-                <div className="font-mono text-[11px] uppercase tracking-widest text-ink-3 mt-0.5">
-                  Hario Switch · French Press · Aeropress · Clever
-                </div>
-              </div>
-              <Switch checked={immersion} onCheckedChange={setImmersion} />
-            </div>
-
+          <div className="mt-4 pt-4 border-t border-rule">
             <PourScheduleEditor pours={pours} onChange={setPours} />
+            <p className="text-[12px] text-ink-3 mt-3">
+              Hybrid drippers (Hario Switch, Clever) — tap a pour&apos;s valve pill to mark it as a steep.
+            </p>
           </div>
         )}
       </Section>

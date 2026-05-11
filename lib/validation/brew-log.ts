@@ -3,6 +3,7 @@ import { z } from "zod";
 const pourSchema = z.object({
   time_seconds: z.coerce.number().int().min(0).max(3600),
   water_g: z.coerce.number().min(0).max(9999),
+  immersion: z.coerce.boolean().optional(),
 });
 
 export const brewLogSchema = z.object({

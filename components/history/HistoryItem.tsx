@@ -1,5 +1,6 @@
 import TastePill from "@/components/ui/TastePill";
 import GetSuggestionButton from "./GetSuggestionButton";
+import { cn } from "@/lib/cn";
 import type { Pour, TasteRating } from "@/lib/db-types";
 
 export interface HistoryRow {
@@ -35,10 +36,16 @@ export default function HistoryItem({ row, diffs }: { row: HistoryRow; diffs: Va
   const d = new Date(row.brewed_at);
 
   const dateLine = `${d.toLocaleDateString(undefined, { month: "short", day: "numeric" })} · ${d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+  const steepCount = row.pours?.filter((p) => p.immersion).length ?? 0;
+  const drainCount = row.pours?.filter((p) => !p.immersion).length ?? 0;
+  const styleLabel =
+    steepCount > 0 && drainCount > 0 ? `${steepCount} steep · ${drainCount} drain`
+    : steepCount > 0 ? `${steepCount} steep`
+    : row.pours?.length ? `${row.pours.length} pours`
+    : null;
   const subInfo = [
     row.dripper?.name ?? null,
-    row.immersion ? "immersion" : null,
-    row.pours?.length ? `${row.pours.length} pours` : null,
+    styleLabel,
   ].filter(Boolean).join(" · ");
 
   return (
@@ -81,13 +88,22 @@ export default function HistoryItem({ row, diffs }: { row: HistoryRow; diffs: Va
       {row.pours?.length ? (
         <div className="mt-4 pt-3 border-t border-rule">
           <p className="sublabel mb-2">Pour schedule</p>
-          <ol className="grid grid-cols-2 md:grid-cols-3 gap-x-3 gap-y-1.5">
+          <ol className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1.5">
             {row.pours.map((p, i) => (
-              <li key={i} className="font-mono text-[12px] tabular-nums text-ink">
-                <span className="text-ink-3">{(i + 1).toString().padStart(2, "0")}</span>{" "}
-                <span>{fmtTime(p.time_seconds)}</span>
-                <span className="text-ink-3"> · </span>
-                <span>{p.water_g}g</span>
+              <li key={i} className="flex items-center gap-2 font-mono text-[12px] tabular-nums text-ink">
+                <span className="text-ink-3 w-5 flex-none">{(i + 1).toString().padStart(2, "0")}</span>
+                <span className="w-9 flex-none">{fmtTime(p.time_seconds)}</span>
+                <span className="text-ink-3">·</span>
+                <span className="w-10 flex-none">{p.water_g}g</span>
+                <span
+                  className={cn(
+                    "text-[10px] uppercase tracking-widest",
+                    p.immersion ? "text-persimmon" : "text-ink-3",
+                  )}
+                  title={p.immersion ? "Valve closed (steep)" : "Valve open (drain)"}
+                >
+                  {p.immersion ? "steep" : "drain"}
+                </span>
               </li>
             ))}
           </ol>

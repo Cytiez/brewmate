@@ -46,6 +46,9 @@ export interface Equipment {
 export interface Pour {
   time_seconds: number;
   water_g: number;
+  // true = valve closed / steep (immersion); false/undefined = valve open / drain (percolation).
+  // Per-pour because hybrid drippers (Hario Switch, Clever) change state mid-recipe.
+  immersion?: boolean;
 }
 
 export interface BrewLog {
