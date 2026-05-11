@@ -1,6 +1,6 @@
 import TastePill from "@/components/ui/TastePill";
 import GetSuggestionButton from "./GetSuggestionButton";
-import type { TasteRating } from "@/lib/db-types";
+import type { Pour, TasteRating } from "@/lib/db-types";
 
 export interface HistoryRow {
   id: string;
@@ -10,6 +10,8 @@ export interface HistoryRow {
   water_temp_c: number | null;
   grind_size: string;
   brew_time_seconds: number;
+  immersion: boolean;
+  pours: Pour[];
   taste_rating: TasteRating;
   taste_note: string | null;
   bean: { name: string } | null;
@@ -58,8 +60,14 @@ export default function HistoryItem({ row, diffs, index }: { row: HistoryRow; di
         <div className="flex items-baseline justify-between gap-3 mb-3 md:mb-4">
           <div className="min-w-0">
             <div className="display text-xl md:text-2xl leading-tight truncate">{row.bean?.name ?? "Brew"}</div>
-            <div className="font-mono text-[11px] uppercase tracking-widest text-ink-2 mt-0.5">
-              on {row.dripper?.name ?? "—"}
+            <div className="font-mono text-[11px] uppercase tracking-widest text-ink-2 mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1">
+              <span>on {row.dripper?.name ?? "—"}</span>
+              {row.immersion ? (
+                <span className="text-persimmon">· immersion</span>
+              ) : null}
+              {row.pours?.length ? (
+                <span className="text-ink-3">· <span className="num">{row.pours.length}</span> pours</span>
+              ) : null}
             </div>
           </div>
           <TastePill rating={row.taste_rating} />
@@ -74,6 +82,25 @@ export default function HistoryItem({ row, diffs, index }: { row: HistoryRow; di
           <Metric label="Water" value={`${row.water_g}g`} />
           <Metric label="Grind" value={row.grind_size} />
         </dl>
+
+        {/* Pour schedule */}
+        {row.pours?.length ? (
+          <div className="mb-3 border-t border-rule pt-3">
+            <div className="font-mono text-[10px] uppercase tracking-kissaten text-ink-2 mb-2">
+              pour schedule
+            </div>
+            <ol className="grid grid-cols-2 md:grid-cols-3 gap-x-3 gap-y-1.5">
+              {row.pours.map((p, i) => (
+                <li key={i} className="font-mono text-[12px] tabular-nums text-ink">
+                  <span className="text-ink-3">{(i + 1).toString().padStart(2, "0")}</span>{" "}
+                  <span>{fmtTime(p.time_seconds)}</span>
+                  <span className="text-ink-3"> · </span>
+                  <span>{p.water_g}g</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        ) : null}
 
         {/* Variable diffs */}
         {diffs.length > 0 ? (

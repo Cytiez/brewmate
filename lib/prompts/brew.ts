@@ -17,6 +17,7 @@ export interface PromptInput {
     BrewLog,
     | "dose_g" | "water_g" | "water_temp_c" | "grind_size"
     | "brew_time_seconds" | "bloom_time_seconds" | "bloom_water_g"
+    | "immersion" | "pours"
     | "taste_rating" | "taste_note"
   >;
 }
@@ -51,6 +52,12 @@ export function buildBrewPrompt({ bean, dripper, grinder, log }: PromptInput): s
     grinder ? `grinder: ${grinder.name}${grinder.grind_unit ? ` (${grinder.grind_unit})` : ""}` : null,
   ].filter(Boolean).join(" | ");
 
+  const pourSchedule = (log.pours ?? []).length
+    ? `pours: ${log.pours
+        .map((p) => `${fmtTime(p.time_seconds)} ${p.water_g}g`)
+        .join(" → ")}`
+    : null;
+
   const recipeParts = [
     `${log.dose_g}g : ${log.water_g}g (1:${ratio.toFixed(1)})`,
     log.water_temp_c != null ? `${log.water_temp_c}°C` : null,
@@ -59,6 +66,8 @@ export function buildBrewPrompt({ bean, dripper, grinder, log }: PromptInput): s
     log.bloom_time_seconds && log.bloom_water_g
       ? `bloom ${log.bloom_time_seconds}s with ${log.bloom_water_g}g`
       : null,
+    log.immersion ? "immersion brew" : null,
+    pourSchedule,
   ].filter(Boolean).join(" | ");
 
   const resultParts = [

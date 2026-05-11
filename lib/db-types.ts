@@ -43,6 +43,11 @@ export interface Equipment {
   updated_at: string;
 }
 
+export interface Pour {
+  time_seconds: number;
+  water_g: number;
+}
+
 export interface BrewLog {
   id: string;
   user_id: string;
@@ -57,6 +62,8 @@ export interface BrewLog {
   brew_time_seconds: number;
   bloom_time_seconds: number | null;
   bloom_water_g: number | null;
+  immersion: boolean;
+  pours: Pour[];
   taste_rating: TasteRating;
   taste_note: string | null;
   brewed_at: string;

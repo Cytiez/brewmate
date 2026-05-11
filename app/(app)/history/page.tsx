@@ -27,6 +27,7 @@ export default async function HistoryPage({ searchParams }: { searchParams: Sear
     .from("brew_logs")
     .select(`
       id, brewed_at, dose_g, water_g, water_temp_c, grind_size, brew_time_seconds,
+      immersion, pours,
       taste_rating, taste_note, bean_id, dripper_id,
       bean:beans!brew_logs_bean_id_fkey(name),
       dripper:equipment!brew_logs_dripper_id_fkey(name),
@@ -51,6 +52,8 @@ export default async function HistoryPage({ searchParams }: { searchParams: Sear
     water_temp_c: r.water_temp_c,
     grind_size: r.grind_size,
     brew_time_seconds: r.brew_time_seconds,
+    immersion: !!r.immersion,
+    pours: Array.isArray(r.pours) ? r.pours : [],
     taste_rating: r.taste_rating,
     taste_note: r.taste_note,
     bean: r.bean ? { name: r.bean.name } : null,
