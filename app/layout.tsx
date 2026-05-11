@@ -5,8 +5,9 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { fraunces, geistSans, geistMono } from "./fonts";
 import ThemeProvider from "@/components/ThemeProvider";
+import { getSiteUrl } from "@/lib/site";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+const siteUrl = getSiteUrl();
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

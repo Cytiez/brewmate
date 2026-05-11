@@ -1,4 +1,5 @@
 import "server-only";
+import { getSiteUrl } from "@/lib/site";
 
 // OpenRouter (OpenAI-compatible) — free Gemma 2 9B by default.
 // Override via OPENROUTER_MODEL if you want to try other free models.
@@ -37,7 +38,7 @@ export async function generateBrewSuggestion(prompt: string): Promise<AiResult> 
       "Content-Type": "application/json",
       Authorization: `Bearer ${key}`,
       // Optional but recommended by OpenRouter for free-tier attribution.
-      "HTTP-Referer": process.env.NEXT_PUBLIC_SITE_URL || "https://brewmate.local",
+      "HTTP-Referer": getSiteUrl(),
       "X-Title": "Brewmate",
     },
     body: JSON.stringify(body),
