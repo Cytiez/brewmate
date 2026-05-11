@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/supabase/current-user";
-import { buildBrewPrompt, parseSuggestions } from "@/lib/prompts/brew";
+import { buildBrewMessages, parseSuggestions } from "@/lib/prompts/brew";
 import { generateBrewSuggestion } from "@/lib/ai";
 import { canUseAi } from "@/lib/features";
 import { log } from "@/lib/log";
@@ -43,8 +43,8 @@ export async function POST(request: Request) {
   if (!bean || !dripper) return NextResponse.json({ error: "missing_refs" }, { status: 400 });
 
   try {
-    const prompt = buildBrewPrompt({ bean: bean as any, dripper: dripper as any, grinder: (grinder as any) ?? null, log: logRow as any });
-    const ai = await generateBrewSuggestion(prompt);
+    const messages = buildBrewMessages({ bean: bean as any, dripper: dripper as any, grinder: (grinder as any) ?? null, log: logRow as any });
+    const ai = await generateBrewSuggestion(messages);
     const items = parseSuggestions(ai.text);
     const content = items ? items.map((s) => `${s.change} — ${s.why}`).join("\n") : ai.text.trim();
 

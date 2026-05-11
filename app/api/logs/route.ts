@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/supabase/current-user";
 import { brewLogSchema } from "@/lib/validation/brew-log";
-import { buildBrewPrompt, parseSuggestions, type SuggestionItem } from "@/lib/prompts/brew";
+import { buildBrewMessages, parseSuggestions, type SuggestionItem } from "@/lib/prompts/brew";
 import { generateBrewSuggestion } from "@/lib/ai";
 import { canUseAi } from "@/lib/features";
 import { log } from "@/lib/log";
@@ -78,13 +78,13 @@ export async function POST(request: Request) {
         } else if (!aiAllowed) {
           rateLimited = true;
         } else {
-          const prompt = buildBrewPrompt({
+          const messages = buildBrewMessages({
             bean: bean as any,
             dripper: dripper as any,
             grinder: (grinder as any) ?? null,
             log: logRow as any,
           });
-          const ai = await generateBrewSuggestion(prompt);
+          const ai = await generateBrewSuggestion(messages);
           const items = parseSuggestions(ai.text);
           const content = items
             ? items.map((s) => `${s.change} — ${s.why}`).join("\n")

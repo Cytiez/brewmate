@@ -1,8 +1,7 @@
 import "server-only";
 import { getSiteUrl } from "@/lib/site";
+import type { ChatMessage } from "@/lib/prompts/brew";
 
-// OpenRouter (OpenAI-compatible) — free Gemma 2 9B by default.
-// Override via OPENROUTER_MODEL if you want to try other free models.
 const MODEL = process.env.OPENROUTER_MODEL || "google/gemma-4-31b-it:free";
 const ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
 
@@ -13,22 +12,25 @@ export interface AiResult {
   model: string;
 }
 
-export async function generateBrewSuggestion(prompt: string): Promise<AiResult> {
+/**
+ * Generate a brewing suggestion via OpenRouter chat completion.
+ * Caller passes the full messages array (system + few-shot + user) built in
+ * lib/prompts/brew.ts so persona, scope-lock, and reasoning rules ship with
+ * every request.
+ */
+export async function generateBrewSuggestion(messages: ChatMessage[]): Promise<AiResult> {
   const key = process.env.OPENROUTER_API_KEY;
   if (!key) throw new Error("OPENROUTER_API_KEY missing");
 
   const body = {
     model: MODEL,
-    messages: [
-      {
-        role: "system",
-        content:
-          "You are a coffee brewing coach. Respond with JSON only matching the schema requested by the user. No prose, no markdown, no code fences.",
-      },
-      { role: "user", content: prompt },
-    ],
-    temperature: 0.4,
-    max_tokens: 256,
+    messages,
+    // Lower temp → more consistent adherence to the persona + format. Few-shot
+    // examples already showed the model the exact tone; we don't need
+    // creativity, we need reliability.
+    temperature: 0.3,
+    // Room for ~3 well-reasoned suggestions, each with a 15-word "why".
+    max_tokens: 400,
     response_format: { type: "json_object" },
   };
 
@@ -37,7 +39,7 @@ export async function generateBrewSuggestion(prompt: string): Promise<AiResult> 
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${key}`,
-      // Optional but recommended by OpenRouter for free-tier attribution.
+      // Recommended by OpenRouter for attribution / abuse handling.
       "HTTP-Referer": getSiteUrl(),
       "X-Title": "Brewmate",
     },
