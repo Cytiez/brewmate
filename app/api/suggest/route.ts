@@ -63,7 +63,10 @@ export async function POST(request: Request) {
       );
 
     return NextResponse.json({ suggestion: { content, items } });
-  } catch (e) {
+  } catch (e: any) {
+    if (e?.code === "rate_limited") {
+      return NextResponse.json({ error: "something_went_wrong" }, { status: 503 });
+    }
     log.error("api.suggest.generate", e, { user_id: user.id });
     return NextResponse.json({ error: "something_went_wrong" }, { status: 500 });
   }
