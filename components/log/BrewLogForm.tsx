@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { toast } from "sonner";
 import { ChevronDown, ChevronUp, Plus, Sparkles } from "lucide-react";
 import BrewTimeInput from "./BrewTimeInput";
@@ -115,8 +114,16 @@ export default function BrewLogForm({ beans, equipment, recentLogs }: Props) {
       if (!res.ok) {
         toast.error(json.error === "invalid_input" ? "Check the form values." : "Could not save. Try again.");
       } else {
+        // Beat of UX polish — show the master's note for ~1.5s, then redirect
+        // to the journal entry. History page reads ai_suggestions from DB,
+        // so the suggestion survives any future refresh.
         setResponse(json);
         router.refresh();
+        if (json.log_id) {
+          setTimeout(() => {
+            router.push(`/history#log-${json.log_id}`);
+          }, 1500);
+        }
       }
     } catch {
       toast.error("Network error. Try again.");
@@ -126,7 +133,7 @@ export default function BrewLogForm({ beans, equipment, recentLogs }: Props) {
   }
 
   if (response?.ok) {
-    return <PostSubmit response={response} onLogAnother={() => location.reload()} />;
+    return <PostSubmit response={response} />;
   }
 
   return (
@@ -349,7 +356,7 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
   );
 }
 
-function PostSubmit({ response, onLogAnother }: { response: SuggestionResp; onLogAnother: () => void }) {
+function PostSubmit({ response }: { response: SuggestionResp }) {
   const saved = !!response.suggestion && !response.rate_limited;
   return (
     <div className="space-y-6 md:max-w-2xl md:mx-auto animate-page">
@@ -400,13 +407,11 @@ function PostSubmit({ response, onLogAnother }: { response: SuggestionResp; onLo
         </p>
       )}
 
-      <div className="grid grid-cols-2 gap-3 pt-4 border-t border-rule">
-        <Button variant="outline" size="lg" onClick={onLogAnother}>
-          Log another
-        </Button>
-        <Button asChild variant="ink" size="lg">
-          <Link href="/history">Open journal</Link>
-        </Button>
+      <div className="pt-4 border-t border-rule text-center">
+        <p className="text-[12px] uppercase tracking-widest text-ink-3 inline-flex items-center gap-2">
+          <span className="h-1 w-1 bg-ink-3 rounded-full animate-pulse" />
+          Opening your journal…
+        </p>
       </div>
     </div>
   );

@@ -130,18 +130,7 @@ export default function HistoryItem({ row, diffs }: { row: HistoryRow; diffs: Va
         </blockquote>
       ) : null}
 
-      {row.suggestion ? (
-        <div className="mt-4 pt-4 border-t border-rule">
-          <p className="text-[12px] uppercase tracking-widest text-persimmon mb-1.5">
-            ✱ Master’s note
-          </p>
-          <p className="whitespace-pre-line text-[14px] md:text-[15px] leading-relaxed text-ink">
-            {row.suggestion}
-          </p>
-        </div>
-      ) : (
-        <GetSuggestionButton brewLogId={row.id} />
-      )}
+      <GetSuggestionButton brewLogId={row.id} existing={row.suggestion} />
     </article>
   );
 }

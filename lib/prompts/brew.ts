@@ -52,10 +52,21 @@ REASONING PRIORITIES (think in this order)
 8. Honor the bean's process: naturals are fruit-forward and over-extract easily — favor cooler / coarser. Washed lights need heat and contact — favor hotter / finer.
 9. For hybrid drippers (Hario Switch, Clever, Aeropress, French Press), per-pour valve state matters. Adjust steep time and drawdown time separately.
 
+CITE THE BREWER'S ACTUAL SETUP
+- Every "why" MUST reference at least one concrete variable from the user's
+  BEAN, GEAR, or RECIPE block (process, days off roast, dripper geometry,
+  grinder model, grind unit, current temp, current ratio, etc.). Not generic chemistry.
+- BAD:  "Cooler water lowers extraction yield."
+- GOOD: "Your 14d-off-roast natural is still gassy — 92°C tames its solubility."
+- GOOD: "V60-02's conical bed channels at 96°C — 92°C steadies it."
+- Read BEAN first, then GEAR, then RECIPE. Find the variable most out of step
+  with the taste rating, target that one first.
+- If a variable isn't in BEAN/GEAR/RECIPE, do not invent it. Cite something that IS present.
+
 OUTPUT RULES
 - 1–3 suggestions, ordered most impactful first.
 - Each "change" must be concrete and quantified: "coarsen 2 clicks", "drop 2°C", "add 15s bloom", "use 17g dose". Use the bean's stated grind unit. Use seconds for time, °C for temp.
-- Each "why" must be ≤ 15 words. Briefly reference physics or chemistry (extraction yield, surface area, contact time, solubility, freshness).
+- Each "why" must be ≤ 20 words. Cite at least one user-specific variable, then briefly reference the physics or chemistry that links the citation to the change.
 - Return JSON only, this exact shape:
   {"suggestions":[{"variable":"grind|temp|ratio|time|bloom|dose|pour|other","change":"...","why":"..."}]}
 - No markdown. No code fences. No greetings.`;
@@ -78,9 +89,9 @@ export const FEW_SHOT_EXAMPLES: ChatMessage[] = [
     role: "assistant",
     content: JSON.stringify({
       suggestions: [
-        { variable: "temp",  change: "drop to 92°C",        why: "Light naturals over-extract easily; cooler water lowers yield." },
-        { variable: "grind", change: "coarsen 2 clicks",     why: "Less surface area slows extraction in the back half." },
-        { variable: "time",  change: "target 3:00 total",    why: "Cuts late bitter-compound extraction without losing body." },
+        { variable: "temp",  change: "drop to 92°C",        why: "Your 14d-off-roast natural is volatile — cooler water tames its solubility." },
+        { variable: "grind", change: "coarsen 2 clicks",    why: "96°C + Comandante grind 22 over-extracts a 1850 masl light — coarsen to slow it." },
+        { variable: "time",  change: "target 3:00 total",   why: "3:30 is long for a 1:16.7 light natural; 3:00 cuts late bitter compounds." },
       ],
     }),
   },
@@ -97,9 +108,9 @@ export const FEW_SHOT_EXAMPLES: ChatMessage[] = [
     role: "assistant",
     content: JSON.stringify({
       suggestions: [
-        { variable: "grind", change: "finer by 4 clicks",     why: "More surface area lifts extraction; sour notes fade as sugars dissolve." },
-        { variable: "temp",  change: "raise to 94°C",         why: "Hotter water speeds up acid neutralization." },
-        { variable: "time",  change: "slow pour, target 3:15", why: "Longer contact time finishes the extraction curve." },
+        { variable: "grind", change: "finer 4 clicks on JX-Pro",   why: "Grind 60 is coarse for a washed Huila at 1:16.5 — finer lifts yield, drops sourness." },
+        { variable: "temp",  change: "raise to 94°C",              why: "91°C is shy for a 6d-off-roast washed medium — hotter water dissolves the acids." },
+        { variable: "time",  change: "slow pour, target 3:15",     why: "Kalita Wave's flat bed drains fast — 3:15 finishes the extraction curve." },
       ],
     }),
   },
