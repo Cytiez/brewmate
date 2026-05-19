@@ -25,6 +25,10 @@ export async function POST(request: Request) {
   const supabase = createSupabaseServerClient();
   const { data: logRow } = await supabase.from("brew_logs").select("*").eq("id", parsed.data.brew_log_id).maybeSingle();
   if (!logRow) return NextResponse.json({ error: "not_found" }, { status: 404 });
+  // Defense-in-depth: RLS should already block cross-user reads via the server
+  // client, but we still want a clear 403 instead of silently 404-ing if RLS
+  // is ever relaxed for an unrelated query.
+  if (logRow.user_id !== user.id) return NextResponse.json({ error: "forbidden" }, { status: 403 });
 
   const { data: allowed, error: rlErr } = await supabase.rpc("check_and_increment_ai_usage", { daily_limit: DAILY_AI_LIMIT });
   if (rlErr) {

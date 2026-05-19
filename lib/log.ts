@@ -1,4 +1,5 @@
 import "server-only";
+import * as Sentry from "@sentry/nextjs";
 
 // Tiny structured logger. JSON to stdout — Vercel ingests it directly.
 // In dev, keep it human-readable so it doesn't drown the terminal.
@@ -39,6 +40,13 @@ function safeErr(err: unknown): { code?: string; message?: string } {
 export const log = {
   info:  (fields: LogFields) => emit("info", fields),
   warn:  (fields: LogFields) => emit("warn", fields),
-  error: (scope: string, err: unknown, extra: Omit<LogFields, "scope"> = {}) =>
-    emit("error", { scope, ...safeErr(err), ...extra }),
+  error: (scope: string, err: unknown, extra: Omit<LogFields, "scope"> = {}) => {
+    emit("error", { scope, ...safeErr(err), ...extra });
+    // Sentry's `beforeSend` filters expected codes (e.g., rate_limited). The
+    // SDK is a no-op when NEXT_PUBLIC_SENTRY_DSN is unset, so this is safe
+    // even before the DSN env var lands.
+    if (process.env.NODE_ENV === "production") {
+      Sentry.captureException(err, { tags: { scope }, extra });
+    }
+  },
 };

@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Settings as SettingsIcon } from "lucide-react";
 import { getCurrentUser } from "@/lib/supabase/current-user";
 import BottomNav from "@/components/nav/BottomNav";
 import TopNav from "@/components/nav/TopNav";
@@ -29,6 +31,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           PageHeader carries the page title. */}
       <div className="md:hidden flex justify-end items-center spine pt-3 pb-1 gap-1">
         <ThemeToggle />
+        <Link
+          href="/settings"
+          aria-label="Settings"
+          className="inline-flex items-center justify-center h-9 w-9 text-ink-3 hover:text-ink transition-colors"
+        >
+          <SettingsIcon className="h-4 w-4" strokeWidth={1.5} />
+        </Link>
         {signOut}
       </div>
 

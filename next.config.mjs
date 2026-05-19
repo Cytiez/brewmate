@@ -1,5 +1,6 @@
 import nextPwa from "next-pwa";
 import bundleAnalyzer from "@next/bundle-analyzer";
+import { withSentryConfig } from "@sentry/nextjs";
 
 const isDev = process.env.NODE_ENV === "development";
 const isProd = process.env.NODE_ENV === "production";
@@ -22,7 +23,7 @@ const csp = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://lh3.googleusercontent.com",
   "font-src 'self' data:",
-  "connect-src 'self' https://*.supabase.co https://openrouter.ai https://vitals.vercel-insights.com",
+  "connect-src 'self' https://*.supabase.co https://openrouter.ai https://vitals.vercel-insights.com https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://*.ingest.de.sentry.io",
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -65,4 +66,17 @@ const nextConfig = {
 // `next-pwa` is a webpack plugin and Turbopack ignores it (warns in dev). Only
 // wrap in production builds so dev stops complaining and runs faster.
 const composed = isProd ? withPWA(nextConfig) : nextConfig;
-export default withAnalyzer(composed);
+const analyzed = withAnalyzer(composed);
+
+// Sentry source-maps are only worth uploading when both the auth token AND
+// org/project are configured. Otherwise this is a no-op wrapper that still
+// runs the Sentry instrumentation hook.
+const sentryOpts = {
+  silent: !process.env.SENTRY_AUTH_TOKEN,
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  hideSourceMaps: true,
+};
+
+export default withSentryConfig(analyzed, sentryOpts);

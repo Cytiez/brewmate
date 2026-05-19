@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ChevronDown, ChevronUp, Plus, Sparkles } from "lucide-react";
@@ -10,6 +10,7 @@ import PourScheduleEditor from "./PourScheduleEditor";
 import { Button } from "@/components/ui/Button";
 import { Label, NumInput, Input, Textarea } from "@/components/ui/Field";
 import { cn } from "@/lib/cn";
+import { celsiusToFahrenheit, fahrenheitToCelsius, useTempUnit } from "@/lib/units";
 import type { Bean, BrewLog, Equipment, Pour, TasteRating } from "@/lib/db-types";
 
 interface Props {
@@ -52,7 +53,28 @@ export default function BrewLogForm({ beans, equipment, recentLogs }: Props) {
 
   const [dose, setDose]         = useState<string>(prefill ? String(prefill.dose_g) : "15");
   const [water, setWater]       = useState<string>(prefill ? String(prefill.water_g) : "250");
-  const [temp, setTemp]         = useState<string>(prefill?.water_temp_c != null ? String(prefill.water_temp_c) : "94");
+  // Temperature input is shown in the user's preferred unit but the canonical
+  // value is always Celsius. We sync the displayed string when the unit
+  // changes so the user sees the equivalent value, not a converted ghost.
+  const [tempUnit] = useTempUnit();
+  const initialTempC = prefill?.water_temp_c != null ? prefill.water_temp_c : 94;
+  const [temp, setTemp] = useState<string>(
+    String(Math.round(tempUnit === "F" ? celsiusToFahrenheit(initialTempC) : initialTempC)),
+  );
+  const prevUnitRef = useRef<typeof tempUnit>(tempUnit);
+  useEffect(() => {
+    if (prevUnitRef.current === tempUnit) return;
+    const parsed = Number(temp);
+    if (Number.isFinite(parsed)) {
+      const converted = tempUnit === "F"
+        ? celsiusToFahrenheit(parsed)      // previous unit was C
+        : fahrenheitToCelsius(parsed);     // previous unit was F
+      setTemp(String(Math.round(converted)));
+    }
+    prevUnitRef.current = tempUnit;
+    // We intentionally exclude `temp` from deps — only run on unit change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tempUnit]);
   const [grind, setGrind]       = useState<string>(prefill?.grind_size ?? "");
   const [brewSecs, setBrewSecs] = useState<number>(prefill?.brew_time_seconds ?? 180);
   const [showBloom, setShowBloom] = useState<boolean>(!!prefill?.bloom_time_seconds);
@@ -96,7 +118,7 @@ export default function BrewLogForm({ beans, equipment, recentLogs }: Props) {
           kettle_id: kettleId,
           dose_g: Number(dose),
           water_g: Number(water),
-          water_temp_c: temp ? Number(temp) : null,
+          water_temp_c: temp ? (tempUnit === "F" ? fahrenheitToCelsius(Number(temp)) : Number(temp)) : null,
           grind_size: grind,
           brew_time_seconds: brewSecs,
           bloom_time_seconds: showBloom && bloomS ? Number(bloomS) : null,
@@ -209,7 +231,7 @@ export default function BrewLogForm({ beans, equipment, recentLogs }: Props) {
 
         <div className="grid grid-cols-2 gap-x-5 mt-6">
           <div>
-            <Label>Temperature · °C</Label>
+            <Label>Temperature · °{tempUnit}</Label>
             <NumInput value={temp} onChange={(e) => setTemp(e.target.value)} step="0.5" />
           </div>
           <div>

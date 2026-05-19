@@ -1,4 +1,6 @@
+import type { ReactNode } from "react";
 import TastePill from "@/components/ui/TastePill";
+import Temp from "@/components/ui/Temp";
 import GetSuggestionButton from "./GetSuggestionButton";
 import { cn } from "@/lib/cn";
 import type { Pour, TasteRating } from "@/lib/db-types";
@@ -69,7 +71,7 @@ export default function HistoryItem({ row, diffs }: { row: HistoryRow; diffs: Va
         <Sep />
         <span className="text-ink">1∶{ratio.toFixed(1)}</span>
         <Sep />
-        <span className="text-ink">{row.water_temp_c != null ? `${row.water_temp_c}°` : "—"}</span>
+        <span className="text-ink"><Temp celsius={row.water_temp_c} /></span>
         <Sep />
         <span className="text-ink">{fmtTime(row.brew_time_seconds)}</span>
         <Sep />
@@ -79,7 +81,7 @@ export default function HistoryItem({ row, diffs }: { row: HistoryRow; diffs: Va
         <Metric label="Dose"  value={`${row.dose_g}g`} />
         <Metric label="Water" value={`${row.water_g}g`} />
         <Metric label="Ratio" value={`1∶${ratio.toFixed(1)}`} />
-        <Metric label="Temp"  value={row.water_temp_c != null ? `${row.water_temp_c}°` : "—"} />
+        <Metric label="Temp"  value={<Temp celsius={row.water_temp_c} />} />
         <Metric label="Time"  value={fmtTime(row.brew_time_seconds)} />
         <Metric label="Grind" value={row.grind_size} />
       </dl>
@@ -139,7 +141,7 @@ function Sep() {
   return <span className="text-ink-3"> · </span>;
 }
 
-function Metric({ label, value }: { label: string; value: string }) {
+function Metric({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div>
       <dt className="text-[12px] text-ink-3">{label}</dt>

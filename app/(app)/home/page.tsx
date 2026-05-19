@@ -122,7 +122,7 @@ export default async function HomePage() {
           </section>
         </div>
 
-        {/* Right: two-cell ledger only */}
+        {/* Right: two-cell ledger + insights link */}
         <aside className="mt-8 md:mt-0 md:sticky md:top-24 md:self-start">
           <section className="grid grid-cols-2 border-y border-rule">
             <Link href="/beans" className="p-4 md:p-5 border-r border-rule hover:bg-elevated transition-colors">
@@ -134,6 +134,19 @@ export default async function HomePage() {
               <div className="sublabel mt-2">Brews logged</div>
             </Link>
           </section>
+
+          {(logCount ?? 0) >= 5 ? (
+            <Link
+              href="/insights"
+              className="mt-3 flex items-center justify-between p-4 md:p-5 border-hairline border-rule hover:bg-elevated transition-colors"
+            >
+              <div>
+                <div className="display text-lg">Insights</div>
+                <div className="sublabel mt-1">Patterns across your brews</div>
+              </div>
+              <ChevronRight className="h-4 w-4 text-ink-3" />
+            </Link>
+          ) : null}
         </aside>
       </div>
     </div>

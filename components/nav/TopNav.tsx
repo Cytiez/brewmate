@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { House, Coffee, History, SlidersHorizontal, Plus } from "lucide-react";
+import { House, Coffee, History, SlidersHorizontal, Plus, Settings } from "lucide-react";
 import { cn } from "@/lib/cn";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 
@@ -66,6 +66,16 @@ export default function TopNav({ signOut }: { signOut?: React.ReactNode }) {
             Log
           </Link>
           <ThemeToggle />
+          <Link
+            href="/settings"
+            aria-label="Settings"
+            className={cn(
+              "inline-flex items-center justify-center h-9 w-9 transition-colors",
+              pathname.startsWith("/settings") ? "text-ink" : "text-ink-3 hover:text-ink",
+            )}
+          >
+            <Settings className="h-4 w-4" strokeWidth={1.5} />
+          </Link>
           {signOut}
         </div>
       </div>
